@@ -1,0 +1,9 @@
+import   "977fe546dde4cda3279c54fbf5940e95:./createMonster.js";
+const $977fe546dde4cda3279c54fbf5940e95$export$1375d0605a9dd1f7 = ()=>{
+    const mainBody = document.getElementById('background');
+    mainBody.innerHTML = '';
+    mainBody.innerHTML = `\n    <section>\n    <section class="up up-close">\n      <h1 class="monster-name">${randomMonster.name} HP:</h1>\n      <progress id="monster-hp" max="" value=""></progress>\n      <h1 class="player">Your HP:</h1>\n      <progress id="player-hp" max="" value=""></progress>\n      <div class="fight-container">\n        <button id="att-btn" class="fight-btn">Attack</button>\n        <button id="heavy-att-btn" class="fight-btn">Heavy Attack</button>\n      </div>\n    </section>\n    </section>\n    <section>\n    <section class="down down-close">\n      <div class="heal">\n        <button id="heal-btn" class="fight-btn">Heal</button>\n      </div>\n      <button id="retry-btn">Retry</button>\n      <button id="home-btn">Create another monster</button>\n    </section>\n    </section>\n  `;
+    setTimeout(()=>{
+        $977fe546dde4cda3279c54fbf5940e95$import$c535f661e751f8bf$9ee0e55dde071824();
+    }, 100);
+};
