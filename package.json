@@ -1,0 +1,18 @@
+{
+  "name": "monster-rng-fullstack",
+  "version": "1.0.0",
+  "description": "Monster generator and combat app",
+  "main": "app.js",
+  "private": true,
+  "scripts": {
+    "build": "parcel build index.html"
+  },
+  "author": "Bartol Komadina",
+  "license": "ISC",
+  "engines": {
+    "node": "14.15.4"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5"
+  }
+}
