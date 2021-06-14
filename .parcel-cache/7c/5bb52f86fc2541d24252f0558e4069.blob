@@ -1,0 +1,103 @@
+import   "2d11e4610e03ea7d730a03feabfa3854:./renderMonster.js";
+import   "2d11e4610e03ea7d730a03feabfa3854:./difficulty.js";
+import   "2d11e4610e03ea7d730a03feabfa3854:./fightMonster.js";
+const $2d11e4610e03ea7d730a03feabfa3854$var$formCreate = document.getElementById('form-create');
+const $2d11e4610e03ea7d730a03feabfa3854$var$formDifficulty = document.getElementById('form-difficulty');
+const $2d11e4610e03ea7d730a03feabfa3854$var$clearForm = (form)=>{
+    form.reset();
+};
+const $2d11e4610e03ea7d730a03feabfa3854$export$4a9e4aeb044a2520 = (text, type = 'timed')=>{
+    const notification = document.querySelector('.notification');
+    const notificationText = document.querySelector('#notificationType');
+    notification.classList.toggle('active');
+    notificationText.classList.toggle('notificationText');
+    notificationText.innerText = `${text}`;
+    const notificationHandler = ()=>{
+        notificationText.innerText = ``;
+        notification.classList.toggle('active');
+        notificationText.classList.toggle('notificationText');
+        window.removeEventListener('mouseup', notificationHandler);
+    };
+    if (type === 'stay') window.addEventListener('mouseup', notificationHandler);
+    else setTimeout(notificationHandler, 2000);
+};
+const $2d11e4610e03ea7d730a03feabfa3854$export$9ee0e55dde071824 = ()=>{
+    document.querySelector('.up').classList.toggle('up-close');
+    document.querySelector('.down').classList.toggle('down-close');
+};
+const $2d11e4610e03ea7d730a03feabfa3854$export$22adb7a78ad28b67 = (event)=>{
+    event.preventDefault();
+    const formCreate = document.getElementById('form-create');
+    fetch('http://monster-rng-back.herokuapp.com/add-monster', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: formCreate.name.value.toUpperCase(),
+            HP: formCreate.HP.value,
+            damage: formCreate.damage.value,
+            difficulty: $2d11e4610e03ea7d730a03feabfa3854$import$f5b77f0f39d3b7f2$c4357f0c6648bbfa(formCreate.HP.value, formCreate.damage.value)
+        })
+    }).then((response)=>{
+        if (response.status === 400) throw new Error('Too crazy monster stats');
+        return response.json();
+    }).then((data)=>{
+        console.log(data);
+        $2d11e4610e03ea7d730a03feabfa3854$export$4a9e4aeb044a2520('Monster created!');
+        window.localStorage.setItem('last created', JSON.stringify(data._id));
+        $2d11e4610e03ea7d730a03feabfa3854$var$clearForm(formCreate);
+    }).catch((error)=>{
+        console.log(error);
+        $2d11e4610e03ea7d730a03feabfa3854$export$4a9e4aeb044a2520(error);
+    });
+};
+const $2d11e4610e03ea7d730a03feabfa3854$export$98de0f639d252d81 = (event)=>{
+    event.preventDefault();
+    const formDifficulty = document.getElementById('form-difficulty');
+    const difficulty = formDifficulty.querySelector('input[name="difficulty"]:checked').value;
+    if (difficulty === 'last') {
+        const lastCreatedId = JSON.parse(window.localStorage.getItem('last created'));
+        fetch('http://monster-rng-back.herokuapp.com/lastcreated/' + lastCreatedId).then((response)=>{
+            if (response.status === 404) throw new Error('Your last created monster escaped. Create another one');
+            return response.json();
+        }).then((data)=>{
+            window.randomMonster = {
+                name: data.name,
+                HP: data.HP,
+                damage: data.damage
+            };
+            $2d11e4610e03ea7d730a03feabfa3854$var$formCreate.removeEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$22adb7a78ad28b67);
+            formDifficulty.removeEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$98de0f639d252d81);
+            $2d11e4610e03ea7d730a03feabfa3854$export$9ee0e55dde071824();
+            setTimeout(()=>{
+                $2d11e4610e03ea7d730a03feabfa3854$import$d2de3b8f6c725284$1375d0605a9dd1f7();
+                $2d11e4610e03ea7d730a03feabfa3854$import$ae4da14e1f6a114$b2179211296e180();
+            }, 600);
+        }).catch((error)=>{
+            console.log(error);
+            $2d11e4610e03ea7d730a03feabfa3854$export$4a9e4aeb044a2520(error);
+        });
+    } else fetch('http://monster-rng-back.herokuapp.com/monster/' + difficulty).then((response)=>{
+        if (response.status === 404) throw new Error('Could not find monster with selected difficulty, please create more');
+        return response.json();
+    }).then((data)=>{
+        window.randomMonster = {
+            name: data.name,
+            HP: data.HP,
+            damage: data.damage
+        };
+        $2d11e4610e03ea7d730a03feabfa3854$var$formCreate.removeEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$22adb7a78ad28b67);
+        formDifficulty.removeEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$98de0f639d252d81);
+        $2d11e4610e03ea7d730a03feabfa3854$export$9ee0e55dde071824();
+        setTimeout(()=>{
+            $2d11e4610e03ea7d730a03feabfa3854$import$d2de3b8f6c725284$1375d0605a9dd1f7();
+            $2d11e4610e03ea7d730a03feabfa3854$import$ae4da14e1f6a114$b2179211296e180();
+        }, 600);
+    }).catch((error)=>{
+        console.log(error);
+        $2d11e4610e03ea7d730a03feabfa3854$export$4a9e4aeb044a2520(error);
+    });
+};
+$2d11e4610e03ea7d730a03feabfa3854$var$formCreate.addEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$22adb7a78ad28b67);
+$2d11e4610e03ea7d730a03feabfa3854$var$formDifficulty.addEventListener('submit', $2d11e4610e03ea7d730a03feabfa3854$export$98de0f639d252d81);
