@@ -39,7 +39,7 @@ export const closingAnimation = () => {
 export const createMonsterHandler = (event) => {
   event.preventDefault();
   const formCreate = document.getElementById('form-create');
-  fetch('http://monster-rng-back.herokuapp.com/add-monster', {
+  fetch('https://monster-rng-back.herokuapp.com/add-monster', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export const getMonsterHandler = (event) => {
   if (difficulty === 'last') {
     const lastCreatedId = JSON.parse(window.localStorage.getItem('last created'));
     
-    fetch('http://monster-rng-back.herokuapp.com/lastcreated/' + lastCreatedId)
+    fetch('https://monster-rng-back.herokuapp.com/lastcreated/' + lastCreatedId)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
@@ -109,7 +109,7 @@ export const getMonsterHandler = (event) => {
         notificationToggle(error);
       });
   } else {
-    fetch('http://monster-rng-back.herokuapp.com/monster/' + difficulty)
+    fetch('https://monster-rng-back.herokuapp.com/monster/' + difficulty)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
