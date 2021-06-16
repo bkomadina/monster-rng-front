@@ -60,6 +60,7 @@ export const fightMonster = () => {
       return;
     } else {
       monsterAttack();
+      checkWin();
     }
   };
 
