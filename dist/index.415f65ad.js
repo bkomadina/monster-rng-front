@@ -635,8 +635,13 @@ const createMonsterHandler = (event)=>{
         if (response.status === 400) throw new Error("Too crazy monster stats");
         return response.json();
     }).then((data)=>{
+        if (!data.id) {
+            notificationToggle("Monster has no ID");
+            clearForm(formCreate);
+            return;
+        }
         notificationToggle("Monster created!");
-        window.localStorage.setItem("last created", JSON.stringify(data._id));
+        window.localStorage.setItem("last created", JSON.stringify(data.id));
         clearForm(formCreate);
     }).catch((error)=>{
         console.error(error);
@@ -647,35 +652,42 @@ const getMonsterHandler = (event)=>{
     event.preventDefault();
     const formDifficulty = document.getElementById("form-difficulty");
     const difficulty = formDifficulty.querySelector('input[name="difficulty"]:checked').value;
-    if (difficulty === "last") {
-        const lastCreatedId = JSON.parse(window.localStorage.getItem("last created"));
-        fetch("http://localhost:3000/lastcreated/" + lastCreatedId).then((response)=>{
-            if (response.status === 404) throw new Error("Your last created monster escaped. Create another one");
-            return response.json();
-        }).then((data)=>{
-            window.randomMonster = {
-                name: data.name,
-                HP: data.HP,
-                damage: data.damage
-            };
-            formCreate.removeEventListener("submit", createMonsterHandler);
-            formDifficulty.removeEventListener("submit", getMonsterHandler);
-            closingAnimation();
-            setTimeout(()=>{
-                (0, _renderMonsterJs.renderMonster)();
-                (0, _fightMonsterJs.fightMonster)();
-            }, 600);
-        }).catch((error)=>{
-            console.error(error);
-            notificationToggle(error);
-        });
-    } else fetch("http://localhost:3000/monster/" + difficulty).then((response)=>{
+    let lastCreatedId;
+    try {
+        lastCreatedId = JSON.parse(window.localStorage.getItem("last created"));
+    } catch (error) {
+        const message = `No last created monster found", ${error}`;
+        console.error(message);
+        notificationToggle(message);
+        return;
+    }
+    if (difficulty === "last" && lastCreatedId) fetch("http://localhost:3000/lastcreated/" + lastCreatedId).then((response)=>{
+        if (response.status === 404) throw new Error("Your last created monster escaped. Create another one");
+        return response.json();
+    }).then((data)=>{
+        window.randomMonster = {
+            name: data.name,
+            HP: data.hp,
+            damage: data.damage
+        };
+        formCreate.removeEventListener("submit", createMonsterHandler);
+        formDifficulty.removeEventListener("submit", getMonsterHandler);
+        closingAnimation();
+        setTimeout(()=>{
+            (0, _renderMonsterJs.renderMonster)();
+            (0, _fightMonsterJs.fightMonster)();
+        }, 600);
+    }).catch((error)=>{
+        console.error(error);
+        notificationToggle(error);
+    });
+    else fetch("http://localhost:3000/monster/" + difficulty).then((response)=>{
         if (response.status === 404) throw new Error("Could not find monster with selected difficulty, please create more");
         return response.json();
     }).then((data)=>{
         window.randomMonster = {
             name: data.name,
-            HP: data.HP,
+            HP: data.hp,
             damage: data.damage
         };
         formCreate.removeEventListener("submit", createMonsterHandler);
