@@ -2,7 +2,6 @@
   "name": "monster-rng-fullstack",
   "version": "1.0.0",
   "description": "Monster generator and combat app",
-  "main": "index.html",
   "private": true,
   "scripts": {
     "build": "parcel build src/index.html"

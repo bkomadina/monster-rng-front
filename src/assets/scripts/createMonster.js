@@ -39,7 +39,7 @@ export const closingAnimation = () => {
 export const createMonsterHandler = (event) => {
   event.preventDefault();
   const formCreate = document.getElementById('form-create');
-  fetch('https://monster-rng-back.herokuapp.com/add-monster', {
+  fetch('http://localhost:3000/add-monster', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -63,13 +63,12 @@ export const createMonsterHandler = (event) => {
       return response.json();
     })
     .then((data) => {
-      console.log(data);
       notificationToggle('Monster created!');
       window.localStorage.setItem('last created', JSON.stringify(data._id));
       clearForm(formCreate);
     })
     .catch((error) => {
-      console.log(error);
+      console.error(error);
       notificationToggle(error);
     });
 };
@@ -81,7 +80,7 @@ export const getMonsterHandler = (event) => {
   if (difficulty === 'last') {
     const lastCreatedId = JSON.parse(window.localStorage.getItem('last created'));
     
-    fetch('https://monster-rng-back.herokuapp.com/lastcreated/' + lastCreatedId)
+    fetch('http://localhost:3000/lastcreated/' + lastCreatedId)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
@@ -105,17 +104,18 @@ export const getMonsterHandler = (event) => {
         }, 600);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         notificationToggle(error);
       });
   } else {
-    fetch('https://monster-rng-back.herokuapp.com/monster/' + difficulty)
+    fetch('http://localhost:3000/monster/' + difficulty)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
             'Could not find monster with selected difficulty, please create more'
           );
         }
+        
         return response.json();
       })
       .then((data) => {
@@ -133,7 +133,7 @@ export const getMonsterHandler = (event) => {
         }, 600);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         notificationToggle(error);
       });
   }
