@@ -4,6 +4,7 @@
   "description": "Monster generator and combat app",
   "private": true,
   "scripts": {
+    "start": "npx parcel src/index.html",
     "build": "parcel build src/index.html"
   },
   "author": "Bartol Komadina",
