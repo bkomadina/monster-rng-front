@@ -39,7 +39,7 @@ export const closingAnimation = () => {
 export const createMonsterHandler = (event) => {
   event.preventDefault();
   const formCreate = document.getElementById('form-create');
-  fetch('http://localhost:3000/add-monster', {
+  fetch('http://localhost:8000/add-monster', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -57,6 +57,8 @@ export const createMonsterHandler = (event) => {
     .then((response) => {
       if (response.status === 400) {
         throw new Error('Too crazy monster stats');
+      } else if (response.status === 500) {
+        throw new Error('Server is down');
       }
       return response.json();
     })
@@ -95,12 +97,14 @@ export const getMonsterHandler = (event) => {
   }
 
   if (difficulty === 'last' && lastCreatedId) {
-    fetch('http://localhost:3000/lastcreated/' + lastCreatedId)
+    fetch('http://localhost:8000/lastcreated/' + lastCreatedId)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
             'Your last created monster escaped. Create another one'
           );
+        } else if (response.status === 500) {
+          throw new Error('Server is down');
         }
         return response.json();
       })
@@ -123,12 +127,14 @@ export const getMonsterHandler = (event) => {
         notificationToggle(error);
       });
   } else {
-    fetch('http://localhost:3000/monster/' + difficulty)
+    fetch('http://localhost:8000/monster/' + difficulty)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
             'Could not find monster with selected difficulty, please create more'
           );
+        } else if (response.status === 500) {
+          throw new Error('Server is down');
         }
 
         return response.json();
