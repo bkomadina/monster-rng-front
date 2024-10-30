@@ -595,6 +595,7 @@ var _difficultyJs = require("./difficulty.js");
 var _fightMonsterJs = require("./fightMonster.js");
 const formCreate = document.getElementById("form-create");
 const formDifficulty = document.getElementById("form-difficulty");
+const backendUrl = "http://localhost:8000";
 const clearForm = (form)=>{
     form.reset();
 };
@@ -620,7 +621,7 @@ const closingAnimation = ()=>{
 const createMonsterHandler = (event)=>{
     event.preventDefault();
     const formCreate = document.getElementById("form-create");
-    fetch("http://localhost:8000/add-monster", {
+    fetch(`${backendUrl}/add-monster`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -662,7 +663,7 @@ const getMonsterHandler = (event)=>{
         notificationToggle(message);
         return;
     }
-    if (difficulty === "last" && lastCreatedId) fetch("http://localhost:8000/lastcreated/" + lastCreatedId).then((response)=>{
+    if (difficulty === "last" && lastCreatedId) fetch(`${backendUrl}/lastcreated/${lastCreatedId}`).then((response)=>{
         if (response.status === 404) throw new Error("Your last created monster escaped. Create another one");
         else if (response.status === 500) throw new Error("Server is down");
         return response.json();
@@ -683,7 +684,7 @@ const getMonsterHandler = (event)=>{
         console.error(error);
         notificationToggle(error);
     });
-    else fetch("http://localhost:8000/monster/" + difficulty).then((response)=>{
+    else fetch(`${backendUrl}/monster/${difficulty}`).then((response)=>{
         if (response.status === 404) throw new Error("Could not find monster with selected difficulty, please create more");
         else if (response.status === 500) throw new Error("Server is down");
         return response.json();

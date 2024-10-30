@@ -1,5 +1,5 @@
-import { renderHome } from './renderHome.js';
-import { closingAnimation, notificationToggle } from './createMonster.js';
+import { renderHome } from "./renderHome.js";
+import { closingAnimation, notificationToggle } from "./createMonster.js";
 
 export const fightMonster = () => {
   let monsterMaxHp = +randomMonster.HP;
@@ -11,13 +11,13 @@ export const fightMonster = () => {
   let currentPlayerHp;
   let healUses;
 
-  const monsterHpProg = document.getElementById('monster-hp');
-  const playerHpProg = document.getElementById('player-hp');
-  const attackBtn = document.getElementById('att-btn');
-  const heavyAttackkBtn = document.getElementById('heavy-att-btn');
-  const healBtn = document.getElementById('heal-btn');
-  const retryBtn = document.getElementById('retry-btn');
-  const homeBtn = document.getElementById('home-btn');
+  const monsterHpProg = document.getElementById("monster-hp");
+  const playerHpProg = document.getElementById("player-hp");
+  const attackBtn = document.getElementById("att-btn");
+  const heavyAttackkBtn = document.getElementById("heavy-att-btn");
+  const healBtn = document.getElementById("heal-btn");
+  const retryBtn = document.getElementById("retry-btn");
+  const homeBtn = document.getElementById("home-btn");
 
   const setMaxHp = (monsterHp) => {
     monsterHpProg.max = monsterHp;
@@ -77,32 +77,32 @@ export const fightMonster = () => {
       monsterAttack();
       checkWin();
     } else {
-      notificationToggle('No healing uses left', 'stay');
+      notificationToggle("No healing uses left", "stay");
     }
   };
 
   const checkWin = () => {
     if (currentMonsterHp <= 0 && currentPlayerHp >= 0) {
-      notificationToggle('You won!', 'stay');
+      notificationToggle("You won!", "stay");
       setMaxHp(monsterMaxHp);
       return true;
     } else if (currentPlayerHp <= 0 && currentMonsterHp >= 0) {
-      notificationToggle('You lost!', 'stay');
+      notificationToggle("You lost!", "stay");
       setMaxHp(monsterMaxHp);
       return true;
     } else if (currentMonsterHp <= 0 && currentPlayerHp <= 0) {
-      notificationToggle('Draw!', 'stay');
+      notificationToggle("Draw!", "stay");
       setMaxHp(monsterMaxHp);
       return true;
     }
   };
 
   const clearListenersRenderHomeHandler = () => {
-    attackBtn.removeEventListener('click', playerAttack);
-    heavyAttackkBtn.removeEventListener('click', playerHeavyAtt);
-    healBtn.removeEventListener('click', playerHeal);
-    retryBtn.removeEventListener('click', setMaxHp.bind(this, monsterMaxHp));
-    homeBtn.removeEventListener('click', renderHome);
+    attackBtn.removeEventListener("click", playerAttack);
+    heavyAttackkBtn.removeEventListener("click", playerHeavyAtt);
+    healBtn.removeEventListener("click", playerHeal);
+    retryBtn.removeEventListener("click", setMaxHp.bind(this, monsterMaxHp));
+    homeBtn.removeEventListener("click", renderHome);
     closingAnimation();
     setTimeout(() => {
       renderHome();
@@ -111,11 +111,11 @@ export const fightMonster = () => {
 
   setMaxHp(monsterMaxHp);
 
-  attackBtn.addEventListener('click', playerAttack);
-  heavyAttackkBtn.addEventListener('click', playerHeavyAtt);
-  healBtn.addEventListener('click', playerHeal);
+  attackBtn.addEventListener("click", playerAttack);
+  heavyAttackkBtn.addEventListener("click", playerHeavyAtt);
+  healBtn.addEventListener("click", playerHeal);
 
-  retryBtn.addEventListener('click', setMaxHp.bind(this, monsterMaxHp));
+  retryBtn.addEventListener("click", setMaxHp.bind(this, monsterMaxHp));
 
-  homeBtn.addEventListener('click', clearListenersRenderHomeHandler);
+  homeBtn.addEventListener("click", clearListenersRenderHomeHandler);
 };

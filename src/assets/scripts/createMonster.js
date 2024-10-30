@@ -1,48 +1,52 @@
-import { renderMonster } from './renderMonster.js';
-import { determineDifficulty } from './difficulty.js';
-import { fightMonster } from './fightMonster.js';
+import { renderMonster } from "./renderMonster.js";
+import { determineDifficulty } from "./difficulty.js";
+import { fightMonster } from "./fightMonster.js";
 
-const formCreate = document.getElementById('form-create');
-const formDifficulty = document.getElementById('form-difficulty');
+const formCreate = document.getElementById("form-create");
+const formDifficulty = document.getElementById("form-difficulty");
+const backendUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.BACKEND_URL
+    : "http://localhost:8000";
 
 const clearForm = (form) => {
   form.reset();
 };
 
-export const notificationToggle = (text, type = 'timed') => {
-  const notification = document.querySelector('.notification');
-  const notificationText = document.querySelector('#notificationType');
+export const notificationToggle = (text, type = "timed") => {
+  const notification = document.querySelector(".notification");
+  const notificationText = document.querySelector("#notificationType");
 
-  notification.classList.toggle('active');
-  notificationText.classList.toggle('notificationText');
+  notification.classList.toggle("active");
+  notificationText.classList.toggle("notificationText");
   notificationText.innerText = `${text}`;
 
   const notificationHandler = () => {
     notificationText.innerText = ``;
-    notification.classList.toggle('active');
-    notificationText.classList.toggle('notificationText');
-    window.removeEventListener('mouseup', notificationHandler);
+    notification.classList.toggle("active");
+    notificationText.classList.toggle("notificationText");
+    window.removeEventListener("mouseup", notificationHandler);
   };
 
-  if (type === 'stay') {
-    window.addEventListener('mouseup', notificationHandler);
+  if (type === "stay") {
+    window.addEventListener("mouseup", notificationHandler);
   } else {
     setTimeout(notificationHandler, 2000);
   }
 };
 
 export const closingAnimation = () => {
-  document.querySelector('.up').classList.toggle('up-close');
-  document.querySelector('.down').classList.toggle('down-close');
+  document.querySelector(".up").classList.toggle("up-close");
+  document.querySelector(".down").classList.toggle("down-close");
 };
 
 export const createMonsterHandler = (event) => {
   event.preventDefault();
-  const formCreate = document.getElementById('form-create');
-  fetch('http://localhost:8000/add-monster', {
-    method: 'POST',
+  const formCreate = document.getElementById("form-create");
+  fetch(`${backendUrl}/add-monster`, {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       name: formCreate.name.value.toUpperCase(),
@@ -56,21 +60,21 @@ export const createMonsterHandler = (event) => {
   })
     .then((response) => {
       if (response.status === 400) {
-        throw new Error('Too crazy monster stats');
+        throw new Error("Too crazy monster stats");
       } else if (response.status === 500) {
-        throw new Error('Server is down');
+        throw new Error("Server is down");
       }
       return response.json();
     })
     .then((data) => {
       if (!data.id) {
-        notificationToggle('Monster has no ID');
+        notificationToggle("Monster has no ID");
         clearForm(formCreate);
         return;
       }
 
-      notificationToggle('Monster created!');
-      window.localStorage.setItem('last created', JSON.stringify(data.id));
+      notificationToggle("Monster created!");
+      window.localStorage.setItem("last created", JSON.stringify(data.id));
       clearForm(formCreate);
     })
     .catch((error) => {
@@ -81,14 +85,14 @@ export const createMonsterHandler = (event) => {
 
 export const getMonsterHandler = (event) => {
   event.preventDefault();
-  const formDifficulty = document.getElementById('form-difficulty');
+  const formDifficulty = document.getElementById("form-difficulty");
   const difficulty = formDifficulty.querySelector(
     'input[name="difficulty"]:checked'
   ).value;
 
   let lastCreatedId;
   try {
-    lastCreatedId = JSON.parse(window.localStorage.getItem('last created'));
+    lastCreatedId = JSON.parse(window.localStorage.getItem("last created"));
   } catch (error) {
     const message = `No last created monster found", ${error}`;
     console.error(message);
@@ -96,15 +100,15 @@ export const getMonsterHandler = (event) => {
     return;
   }
 
-  if (difficulty === 'last' && lastCreatedId) {
-    fetch('http://localhost:8000/lastcreated/' + lastCreatedId)
+  if (difficulty === "last" && lastCreatedId) {
+    fetch(`${backendUrl}/lastcreated/${lastCreatedId}`)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
-            'Your last created monster escaped. Create another one'
+            "Your last created monster escaped. Create another one"
           );
         } else if (response.status === 500) {
-          throw new Error('Server is down');
+          throw new Error("Server is down");
         }
         return response.json();
       })
@@ -114,8 +118,8 @@ export const getMonsterHandler = (event) => {
           HP: data.hp,
           damage: data.damage,
         };
-        formCreate.removeEventListener('submit', createMonsterHandler);
-        formDifficulty.removeEventListener('submit', getMonsterHandler);
+        formCreate.removeEventListener("submit", createMonsterHandler);
+        formDifficulty.removeEventListener("submit", getMonsterHandler);
         closingAnimation();
         setTimeout(() => {
           renderMonster();
@@ -127,14 +131,14 @@ export const getMonsterHandler = (event) => {
         notificationToggle(error);
       });
   } else {
-    fetch('http://localhost:8000/monster/' + difficulty)
+    fetch(`${backendUrl}/monster/${difficulty}`)
       .then((response) => {
         if (response.status === 404) {
           throw new Error(
-            'Could not find monster with selected difficulty, please create more'
+            "Could not find monster with selected difficulty, please create more"
           );
         } else if (response.status === 500) {
-          throw new Error('Server is down');
+          throw new Error("Server is down");
         }
 
         return response.json();
@@ -145,8 +149,8 @@ export const getMonsterHandler = (event) => {
           HP: data.hp,
           damage: data.damage,
         };
-        formCreate.removeEventListener('submit', createMonsterHandler);
-        formDifficulty.removeEventListener('submit', getMonsterHandler);
+        formCreate.removeEventListener("submit", createMonsterHandler);
+        formDifficulty.removeEventListener("submit", getMonsterHandler);
         closingAnimation();
         setTimeout(() => {
           renderMonster();
@@ -160,5 +164,5 @@ export const getMonsterHandler = (event) => {
   }
 };
 
-formCreate.addEventListener('submit', createMonsterHandler);
-formDifficulty.addEventListener('submit', getMonsterHandler);
+formCreate.addEventListener("submit", createMonsterHandler);
+formDifficulty.addEventListener("submit", getMonsterHandler);

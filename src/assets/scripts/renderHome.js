@@ -1,10 +1,10 @@
-import { getMonsterHandler } from './createMonster.js';
-import { createMonsterHandler } from './createMonster.js';
-import { closingAnimation } from './createMonster.js';
+import { getMonsterHandler } from "./createMonster.js";
+import { createMonsterHandler } from "./createMonster.js";
+import { closingAnimation } from "./createMonster.js";
 
 export const renderHome = () => {
-  const mainBody = document.getElementById('background');
-  mainBody.innerHTML = '';
+  const mainBody = document.getElementById("background");
+  mainBody.innerHTML = "";
   mainBody.innerHTML = `
   <section>
   <section class="up up-close">
@@ -50,13 +50,15 @@ export const renderHome = () => {
     </section>
     </section>
 `;
-setTimeout(() => {
-  closingAnimation();
-}, 100);
-  const formCreate = document.getElementById('form-create');
-  const formDifficulty = document.getElementById('form-difficulty');
-  const difficulty = formDifficulty.querySelector('input[name="difficulty"]:checked').value;
+  setTimeout(() => {
+    closingAnimation();
+  }, 100);
+  const formCreate = document.getElementById("form-create");
+  const formDifficulty = document.getElementById("form-difficulty");
+  const difficulty = formDifficulty.querySelector(
+    'input[name="difficulty"]:checked'
+  ).value;
 
-  formCreate.addEventListener('submit', createMonsterHandler);
-  formDifficulty.addEventListener('submit', getMonsterHandler);
+  formCreate.addEventListener("submit", createMonsterHandler);
+  formDifficulty.addEventListener("submit", getMonsterHandler);
 };

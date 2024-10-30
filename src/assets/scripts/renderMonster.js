@@ -1,9 +1,9 @@
-import { closingAnimation } from './createMonster.js';
+import { closingAnimation } from "./createMonster.js";
 
 export const renderMonster = () => {
-    const mainBody = document.getElementById('background');
-    mainBody.innerHTML = '';
-    mainBody.innerHTML = `
+  const mainBody = document.getElementById("background");
+  mainBody.innerHTML = "";
+  mainBody.innerHTML = `
     <section>
     <section class="up up-close">
       <h1 class="monster-name">${randomMonster.name} HP:</h1>
