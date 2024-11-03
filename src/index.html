@@ -1,33 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monster RNG</title>
-  <link rel="icon" type="image/png" href="./assets/styles/favicon.ico"/>
-  <link rel="preload" href="./assets/styles/novitonova-regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./assets/styles/createMonster.css"/>
-  <script type="module" src="./assets/scripts/createMonster.js" defer ></script>
-</head>
-<body>
-  <div class="notification">
-    <span id="notificationType" class=""></span>
-  </div>
-  <div id="background">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monster RNG - Random Monster Generator</title>
+    <meta
+      name="description"
+      content="Monster RNG - Random Monster Generator turn based fighting mini game created by Bartol Komadina.
+      Create your own monsters which you can fight against by selecting 'Last created' or select a difficulty to fight against a random one created by other players."
+    />
+    <link rel="icon" type="image/png" href="./assets/styles/favicon.ico" />
+    <link
+      rel="preload"
+      href="./assets/styles/novitonova-regular-webfont.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./assets/styles/createMonster.css" />
+    <script
+      type="module"
+      src="./assets/scripts/createMonster.js"
+      defer
+    ></script>
+  </head>
+  <body>
+    <div class="notification">
+      <span id="notificationType" class=""></span>
+    </div>
+    <div id="background">
       <section>
         <section class="up">
           <h1 class="top-heading">Create your monster</h1>
           <form id="form-create">
-          <label for="name">Name:</label>
-          <input id="name" type="text" pattern="^[a-zA-Z\s]{2,20}$" title="2 to 20 letters, no special characters" required="required" autocomplete="off">
-          <label for="HP">HP:</label>
-          <input id="HP" type="number" min="15" max="160" required="required" autocomplete="off">
-          <label for="damage">Damage:</label>
-          <input id="damage" type="number" min="5" max="30" required="required" autocomplete="off">
-          <button type="submit">Create</button>
+            <label for="name">Name:</label>
+            <input
+              id="name"
+              type="text"
+              pattern="^[a-zA-Z\s]{2,20}$"
+              title="2 to 20 letters, no special characters"
+              required="required"
+              autocomplete="off"
+            />
+            <label for="HP">HP:</label>
+            <input
+              id="HP"
+              type="number"
+              min="15"
+              max="160"
+              required="required"
+              autocomplete="off"
+            />
+            <label for="damage">Damage:</label>
+            <input
+              id="damage"
+              type="number"
+              min="5"
+              max="30"
+              required="required"
+              autocomplete="off"
+            />
+            <button type="submit">Create</button>
           </form>
-          </section>
+        </section>
       </section>
       <section>
         <section class="down">
@@ -35,28 +71,55 @@
           <form id="form-difficulty">
             <ul>
               <li>
-                <input name="difficulty" id="easy" value="easy" type="radio" checked="checked" class="circle">
+                <input
+                  name="difficulty"
+                  id="easy"
+                  value="easy"
+                  type="radio"
+                  checked="checked"
+                  class="circle"
+                />
                 <label for="easy">Easy</label>
               </li>
               <li>
-                <input name="difficulty" id="medium" value="medium" type="radio" class="circle">
+                <input
+                  name="difficulty"
+                  id="medium"
+                  value="medium"
+                  type="radio"
+                  class="circle"
+                />
                 <label for="medium">Medium</label>
               </li>
               <li>
-                <input name="difficulty" id="hard" value="hard" type="radio" class="circle">
+                <input
+                  name="difficulty"
+                  id="hard"
+                  value="hard"
+                  type="radio"
+                  class="circle"
+                />
                 <label for="hard">Hard</label>
               </li>
               <li class="last">
-                  <input name="difficulty" id="last" value="last" type="radio" class="circle">
-                  <label for="last">Last Created</label>
+                <input
+                  name="difficulty"
+                  id="last"
+                  value="last"
+                  type="radio"
+                  class="circle"
+                />
+                <label for="last">Last Created</label>
               </li>
               <li class="last">
-                  <button id="fight-monster-btn" type="submit">Fight monster</button>
+                <button id="fight-monster-btn" type="submit">
+                  Fight monster
+                </button>
               </li>
             </ul>
           </form>
         </section>
       </section>
-  </div>
-</body>
+    </div>
+  </body>
 </html>
