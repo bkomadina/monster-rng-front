@@ -10,28 +10,6 @@ const backendUrl =
     ? process.env.BACKEND_URL
     : "http://localhost:8000";
 
-const interval = 30000; // Interval in milliseconds (30 seconds)
-
-const reloadWebsite = () => {
-  fetch(backendUrl)
-    .then((response) => {
-      console.log(
-        `Reloaded at ${new Date().toISOString()}: Status Code ${
-          response.status
-        }`
-      );
-    })
-    .catch((error) => {
-      console.error(
-        `Error while reloading at ${new Date().toISOString()}:`,
-        error.message
-      );
-      notificationToggle(error);
-    });
-};
-
-setInterval(reloadWebsite, interval);
-
 const clearForm = (form) => {
   form.reset();
 };
