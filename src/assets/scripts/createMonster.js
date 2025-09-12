@@ -5,8 +5,10 @@ import { fightMonster } from "./fightMonster.js";
 const formCreate = document.getElementById("form-create");
 const formDifficulty = document.getElementById("form-difficulty");
 
-const backendUrl = process.env.PARCEL_BACKEND_URL;
-console.log("process.env: ", process.env);
+const backendUrl =
+  process.env.NODE_ENV === "production"
+    ? process.env.PARCEL_BACKEND_URL
+    : "http://localhost:8000";
 
 const clearForm = (form) => {
   form.reset();
@@ -46,6 +48,24 @@ export const closingAnimation = () => {
   document.querySelector(".down").classList.toggle("down-close");
 };
 
+const startFight = (monsterData) => {
+  window.randomMonster = {
+    name: monsterData.name,
+    HP: monsterData.hp,
+    damage: monsterData.damage,
+  };
+
+  formCreate.removeEventListener("submit", createMonsterHandler);
+  formDifficulty.removeEventListener("submit", getMonsterHandler);
+
+  closingAnimation();
+  setTimeout(() => {
+    hideNotification();
+    renderMonster();
+    fightMonster();
+  }, 600);
+};
+
 export const createMonsterHandler = async (event) => {
   event.preventDefault();
   showNotification("Loading...");
@@ -82,10 +102,8 @@ export const createMonsterHandler = async (event) => {
       return;
     }
 
-    notificationToggle("Monster created!");
     window.localStorage.setItem("last created", JSON.stringify(data.id));
-    clearForm(formCreate);
-    hideNotification();
+    startFight(data);
   } catch (error) {
     console.error(error);
     notificationToggle(error.message);
@@ -129,19 +147,7 @@ export const getMonsterHandler = async (event) => {
 
     const data = await getMonster(url);
 
-    window.randomMonster = {
-      name: data.name,
-      HP: data.hp,
-      damage: data.damage,
-    };
-    formCreate.removeEventListener("submit", createMonsterHandler);
-    formDifficulty.removeEventListener("submit", getMonsterHandler);
-    closingAnimation();
-    setTimeout(() => {
-      hideNotification();
-      renderMonster();
-      fightMonster();
-    }, 600);
+    startFight(data);
   } catch (error) {
     console.error(error);
     notificationToggle(error.message);
