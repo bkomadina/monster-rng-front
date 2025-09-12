@@ -5,35 +5,39 @@ import { fightMonster } from "./fightMonster.js";
 const formCreate = document.getElementById("form-create");
 const formDifficulty = document.getElementById("form-difficulty");
 
-// const backendUrl =
-//   process.env.NODE_ENV === "production"
-//     ? process.env.BACKEND_URL
-//     : "http://localhost:8000";
-const backendUrl = process.env.BACKEND_URL;
+const backendUrl = process.env.PARCEL_BACKEND_URL;
+console.log("process.env: ", process.env);
 
 const clearForm = (form) => {
   form.reset();
 };
 
-export const notificationToggle = (text, type = "timed") => {
+const showNotification = (text) => {
   const notification = document.querySelector(".notification");
   const notificationText = document.querySelector("#notificationType");
+  notificationText.innerText = text;
+  notification.classList.add("active");
+  notificationText.classList.add("notificationText");
+};
 
-  notification.classList.toggle("active");
-  notificationText.classList.toggle("notificationText");
-  notificationText.innerText = `${text}`;
+const hideNotification = () => {
+  const notification = document.querySelector(".notification");
+  const notificationText = document.querySelector("#notificationType");
+  notification.classList.remove("active");
+  notificationText.classList.remove("notificationText");
+  notificationText.innerText = "";
+};
 
-  const notificationHandler = () => {
-    notificationText.innerText = ``;
-    notification.classList.toggle("active");
-    notificationText.classList.toggle("notificationText");
-    window.removeEventListener("mouseup", notificationHandler);
-  };
-
-  if (type === "stay") {
+export const notificationToggle = (text, type = "timed") => {
+  showNotification(text);
+  if (type === "timed") {
+    setTimeout(hideNotification, 2000);
+  } else if (type === "stay") {
+    const notificationHandler = () => {
+      hideNotification();
+      window.removeEventListener("mouseup", notificationHandler);
+    };
     window.addEventListener("mouseup", notificationHandler);
-  } else {
-    setTimeout(notificationHandler, 2000);
   }
 };
 
@@ -42,127 +46,105 @@ export const closingAnimation = () => {
   document.querySelector(".down").classList.toggle("down-close");
 };
 
-export const createMonsterHandler = (event) => {
+export const createMonsterHandler = async (event) => {
   event.preventDefault();
-  const formCreate = document.getElementById("form-create");
-  fetch(`${backendUrl}/add-monster`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      name: formCreate.name.value.toUpperCase(),
-      HP: formCreate.HP.value,
-      damage: formCreate.damage.value,
-      difficulty: determineDifficulty(
-        formCreate.HP.value,
-        formCreate.damage.value
-      ),
-    }),
-  })
-    .then((response) => {
-      if (response.status === 400) {
-        throw new Error("Too crazy monster stats");
-      } else if (response.status === 500) {
-        throw new Error("Server is down");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      if (!data.id) {
-        notificationToggle("Monster has no ID");
-        clearForm(formCreate);
-        return;
-      }
+  showNotification("Loading...");
 
-      notificationToggle("Monster created!");
-      window.localStorage.setItem("last created", JSON.stringify(data.id));
-      clearForm(formCreate);
-    })
-    .catch((error) => {
-      console.error(error);
-      notificationToggle(error);
+  const formCreate = document.getElementById("form-create");
+  try {
+    const response = await fetch(`${backendUrl}/add-monster`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: formCreate.name.value.toUpperCase(),
+        HP: formCreate.HP.value,
+        damage: formCreate.damage.value,
+        difficulty: determineDifficulty(
+          formCreate.HP.value,
+          formCreate.damage.value
+        ),
+      }),
     });
+
+    if (response.status === 400) {
+      throw new Error("Too crazy monster stats");
+    } else if (response.status === 500) {
+      throw new Error("Server is down");
+    }
+
+    const data = await response.json();
+
+    if (!data.id) {
+      notificationToggle("Monster has no ID");
+      clearForm(formCreate);
+      return;
+    }
+
+    notificationToggle("Monster created!");
+    window.localStorage.setItem("last created", JSON.stringify(data.id));
+    clearForm(formCreate);
+    hideNotification();
+  } catch (error) {
+    console.error(error);
+    notificationToggle(error.message);
+  }
 };
 
-export const getMonsterHandler = (event) => {
+export const getMonsterHandler = async (event) => {
   event.preventDefault();
+  showNotification("Loading...");
+
   const formDifficulty = document.getElementById("form-difficulty");
   const difficulty = formDifficulty.querySelector(
     'input[name="difficulty"]:checked'
   ).value;
 
-  let lastCreatedId;
   try {
-    lastCreatedId = JSON.parse(window.localStorage.getItem("last created"));
+    const getMonster = async (url) => {
+      const response = await fetch(url);
+      if (response.status === 404) {
+        throw new Error(
+          "Your last created monster escaped. Create another one"
+        );
+      } else if (response.status === 500) {
+        throw new Error("Server is down");
+      }
+      return await response.json();
+    };
+
+    let url;
+    if (difficulty === "last") {
+      const lastCreatedId = JSON.parse(
+        window.localStorage.getItem("last created")
+      );
+      if (!lastCreatedId) {
+        throw new Error("No last created monster found.");
+      }
+      url = `${backendUrl}/lastcreated/${lastCreatedId}`;
+    } else {
+      url = `${backendUrl}/monster/${difficulty}`;
+    }
+
+    const data = await getMonster(url);
+
+    window.randomMonster = {
+      name: data.name,
+      HP: data.hp,
+      damage: data.damage,
+    };
+    formCreate.removeEventListener("submit", createMonsterHandler);
+    formDifficulty.removeEventListener("submit", getMonsterHandler);
+    closingAnimation();
+    setTimeout(() => {
+      hideNotification();
+      renderMonster();
+      fightMonster();
+    }, 600);
   } catch (error) {
-    const message = `No last created monster found", ${error}`;
-    console.error(message);
-    notificationToggle(message);
-    return;
-  }
-
-  if (difficulty === "last" && lastCreatedId) {
-    fetch(`${backendUrl}/lastcreated/${lastCreatedId}`)
-      .then((response) => {
-        if (response.status === 404) {
-          throw new Error(
-            "Your last created monster escaped. Create another one"
-          );
-        } else if (response.status === 500) {
-          throw new Error("Server is down");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        window.randomMonster = {
-          name: data.name,
-          HP: data.hp,
-          damage: data.damage,
-        };
-        formCreate.removeEventListener("submit", createMonsterHandler);
-        formDifficulty.removeEventListener("submit", getMonsterHandler);
-        closingAnimation();
-        setTimeout(() => {
-          renderMonster();
-          fightMonster();
-        }, 600);
-      })
-      .catch((error) => {
-        console.error(error);
-        notificationToggle(error);
-      });
-  } else {
-    fetch(`${backendUrl}/monster/${difficulty}`)
-      .then((response) => {
-        if (response.status === 404) {
-          throw new Error(
-            "Could not find monster with selected difficulty, please create more"
-          );
-        } else if (response.status === 500) {
-          throw new Error("Server is down");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        window.randomMonster = {
-          name: data.name,
-          HP: data.hp,
-          damage: data.damage,
-        };
-        formCreate.removeEventListener("submit", createMonsterHandler);
-        formDifficulty.removeEventListener("submit", getMonsterHandler);
-        closingAnimation();
-        setTimeout(() => {
-          renderMonster();
-          fightMonster();
-        }, 600);
-      })
-      .catch((error) => {
-        console.error(error);
-        notificationToggle(error);
-      });
+    console.error(error);
+    notificationToggle(error.message);
   }
 };
 
