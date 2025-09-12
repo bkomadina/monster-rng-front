@@ -5,10 +5,11 @@ import { fightMonster } from "./fightMonster.js";
 const formCreate = document.getElementById("form-create");
 const formDifficulty = document.getElementById("form-difficulty");
 
-const backendUrl =
-  process.env.NODE_ENV === "production"
-    ? process.env.BACKEND_URL
-    : "http://localhost:8000";
+// const backendUrl =
+//   process.env.NODE_ENV === "production"
+//     ? process.env.BACKEND_URL
+//     : "http://localhost:8000";
+const backendUrl = process.env.BACKEND_URL;
 
 const clearForm = (form) => {
   form.reset();
